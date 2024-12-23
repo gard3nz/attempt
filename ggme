@@ -1,0 +1,109 @@
+#include <vector>
+#include <iostream>
+#include <string>
+using namespace std;
+
+
+
+
+
+class Enemy {
+public:
+    string type;
+    int health;
+    int attackPower;
+    
+    Enemy(const string& type, int health, int attackPower)
+        :type(type), health(health), attackPower(attackPower) {}
+};
+
+class Player {
+public:
+    string name;
+    int health;
+    int attackPower;
+    int defense;
+    vector<string> inventory;
+
+    Player(const string& name) : name(name), health(100), attackPower(10), defense(5) {}
+    
+    void attack(Enemy& enemy);
+    void defend(int damage);
+    void useItem(const string& item);
+};
+
+class Dungeon {
+    public:
+        vector<std::vector<char>> map;
+        int playerX, playerY;
+
+        Dungeon(int rows,int cols):map(rows,vector<char>(cols, '.')) {
+        playerX = rows / 2;
+        playerY = cols / 2;
+        map[playerX][playerY] = 'P';
+}
+    
+        void displayMap();
+        void movePlayer(char direction);
+};
+
+void Dungeon::movePlayer(char direction) {
+map[playerX][playerY] = '.';
+    if (direction == 'w') playerX--;
+    if (direction == 's') playerX++;
+    if (direction == 'a') playerY--;
+    if (direction == 'd') playerY++;
+    map[playerX][playerY] = 'P';
+}
+
+void Dungeon::displayMap() {
+    for (const auto& row : map) {
+        for (char cell : row) cout << cell << ' ';
+        cout << '\n';
+}
+}
+
+void Player::attack(Enemy& enemy) {
+    enemy.health -= attackPower;
+    std::cout << "Вы нанесли урон врагу: " << attackPower << "\n";
+}
+
+void Player::defend(int damage) {
+    int netDamage = damage - defense;
+    health -= (netDamage > 0) ? netDamage : 0;
+    cout << "Вы получили урон: " << netDamage << "\n";
+}
+
+class Item {
+public:
+    string name;
+    string effect;
+    
+    Item(const string& name, const std::string& effect)
+        : name(name), effect(effect) {}
+};
+
+void Player::useItem(const string& item) {
+    if (item == "health_potion") health += 20;
+    cout << "Вы использовали: " << item << "\n";
+}
+
+void gameLoop(Dungeon& dungeon, Player& player) {
+    while (player.health > 0) {
+    dungeon.displayMap();
+        cout << "Введите команду (w/a/s/d для движения): ";
+        char command;
+        cin >> command;
+        dungeon.movePlayer(command);
+        // События: встретить врага, найти предмет, и т.д.
+        }
+    cout << (player.health > 0 ? "Вы победили!" : "Игра окончена!") << "\n";
+}
+
+
+int main()
+{
+    cout<<"Hello World";
+
+    return 0;
+}
