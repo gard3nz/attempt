@@ -1,0 +1,118 @@
+#include <iostream>
+
+#include <vector>
+
+#include <ctime>
+
+using namespace std;
+
+
+
+
+int main(){
+
+
+srand(time(0));
+
+int n, m; cin >> n;
+
+vector<vector<double>>matrix(n, vector<double>(n));
+
+vector<double>b(n);vector<double>x(n, 0);
+
+
+
+for (int i = 0; i < n; i++){
+
+    b[i]=rand()%(5+1);
+
+}
+
+
+for (int i = 0; i < n; i++)
+
+    for (int j = 0; j < n; j++){
+
+        matrix[i][j] = rand()%(101);
+
+}
+
+
+cout << "\n" << "UR MATRIX: " << "\t" << "|MATRIX B:" << "\n";
+
+for (int i = 0; i < n; i++){
+
+    for (int j = 0; j < n; j++) cout << matrix[i][j] << ' ';
+
+    cout << "\t" <<  "| " << b[i] << "\n";
+
+}
+
+
+
+for (int i=0;i<n;i++){
+
+    int maxrow = i;
+
+    for (int k=i+1;k<n;k++){
+
+        if (abs(matrix[k][i])>abs(matrix[maxrow][i])){
+
+            maxrow=k;
+
+        }
+
+    }
+
+    if (maxrow != i){
+
+        swap(matrix[i], matrix[maxrow]);
+
+        swap(b[i], b[maxrow]);
+
+    }
+
+    for (int j=i+1;j<n;j++){
+
+        double m = matrix[j][i]/matrix[i][i];
+
+        for (int k=i;k<m;k++){
+
+            matrix[j][k] -= m*matrix[i][k];
+
+        }
+
+        b[j] -= m*b[i];
+
+    }
+
+}
+
+
+cout << "\n" << "UR MATRIX: " << "\t" << "|MATRIX B:" << "\n";
+
+for (int i = 0; i < n; i++){
+    for (int j = 0; j < n; j++) cout << matrix[i][j] << ' ';
+    cout << "\t" <<  "| " << b[i] << "\n";
+}
+
+
+for (int i=n-1;i>=0;i--){
+    double sum = 0;
+    for (int j=i+1;i<n;i++){
+        sum+=matrix[i][j]*x[j];
+
+    }
+    x[i]=(b[i]-sum)/matrix[i][i];
+}
+
+cout << "SOLUTION: \n";
+for (int i=0;i<n;i++){
+
+    cout << "x[" << i << "] = " << x[i];
+}
+
+
+
+
+}
