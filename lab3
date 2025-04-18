@@ -10,7 +10,7 @@ using namespace std;
 
 int main()
 {
-////№1
+//№1
 //set<int>st;
 //int size1; cin >> size1;
 //for (int i=0; i<size1;i++){
@@ -21,17 +21,15 @@ int main()
 
 
 //№2
-//vector<int>vec;
+//multiset<int>mst22;
 //int size1; cin >> size1;
 //for (int i=0; i<size1;i++){
 //    int nu; cin >> nu;
-//    vec.push_back(nu);
+//    mst22.insert(nu);
 //}
-//int count = 0;int x; cin >> x;
-//for (int i=0; i<size1;i++){
-//    if (vec[i]==x) count++;
-//}
-//cout << "Num of " << x << ": " << count;
+//int x; cin >> x;
+//int countt = mst22.count(x);
+//cout << "Num of " << x << ": " << countt;
 
 //№3
 //stack<int>st;
@@ -72,36 +70,56 @@ int main()
 
 //№6
 //vector<int>vec;
-//int a;
 //int size1; cin >> size1;
 //for (int i=0; i<size1;i++){
 //    int nu; cin >> nu;
 //    vec.push_back(nu);
 //}
-//list<int>lsd;
-//list<int>lsd2;
+//list<int>lssd;
+//list<int>lssd2;
 //for(int i =0;i<size1;i++){
 //    if(vec[i]%2==0){
-//        lsd.push_back(vec[i]);
-//    }else{lsd2.push_back(vec[i]);}
+//        lssd.push_back(vec[i]);
+//    }else{lssd2.push_back(vec[i]);}
 //}
-//lsd.splice(lsd.end(), lsd2);
-//for (auto &l: lsd) cout << l << " ";
+//lssd.splice(lssd.end(), lssd2);
+//for (auto &l: lssd) cout << l << " ";
 
 
 //#7
-int k=0;
-vector<int>vec;
-int size1; cin >> size1;
-for (int i=0; i<size1;i++){
-    int nu; cin >> nu;
-    vec.push_back(nu);
-}
-string stst;
-int g=vec.size()-1;
-for (int i = 0; i < vec.size(); i++){
-    if (vec[i]==vec[g-i]) k++;
-}
-if(k==vec.size()) cout<<"yes";
-else cout<<"no";
+//vector<int>vec;
+//int size1; cin >> size1;
+//for (int i=0; i<size1;i++){
+//    int nu; cin >> nu;
+//    vec.push_back(nu);
+//}
+//if(equal(vec.begin(), vec.end(), vec.rbegin())) cout<<"yes";
+//else cout<<"no";
+
+//№8
+//int size;
+//cin >> size;
+//vector<int> arr(size);
+//for (int i = 0; i < size; ++i) {
+//   cin >> arr[i];
+//}
+
+//int x;
+//cin >> x;
+//int count = 0;
+
+//for (int i = 0; i < size; ++i) {
+//   for (int j = i + 1; j < size; ++j) {
+//       if (arr[i] + arr[j] == x) {
+//           count++;
+//           cout << arr[i] << " " << arr[j] << endl;
+//           arr[i] = x + 1;
+//           arr[j] = x + 1;
+//           break;
+//       }
+//   }
+//}
+//cout << "pairs: " << count << endl;
+//return 0;
+
 }
