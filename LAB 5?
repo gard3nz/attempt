@@ -3,8 +3,6 @@
 #include <ctime>
 using namespace std;
 
-
-
 int main(){
 
 srand(time(0));
@@ -48,7 +46,7 @@ for (int i=0;i<n;i++){
 
     for (int j=i+1;j<n;j++){
         double m = matrix[j][i]/matrix[i][i];
-        for (int k=i;k<m;k++){
+        for (int k=i;k<n;k++){
             matrix[j][k] -= m*matrix[i][k];
         }
         b[j] -= m*b[i];
@@ -63,7 +61,7 @@ for (int i = 0; i < n; i++){
 
 for (int i=n-1;i>=0;i--){
     double sum = 0;
-    for (int j=i+1;i<n;i++){
+    for (int j=i+1;j<n;j++){
         sum+=matrix[i][j]*x[j];
     }
     x[i]=(b[i]-sum)/matrix[i][i];
@@ -72,8 +70,5 @@ cout << "SOLUTION: \n";
 for (int i=0;i<n;i++){
     cout << "x[" << i << "] = " << x[i];
 }
-
-
-
 
 }
