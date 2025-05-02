@@ -1,0 +1,59 @@
+#include <iostream>
+#include <vector>
+#include <ctime>
+#include <cmath>  // Добавлено для abs()
+using namespace std;
+
+int main() {
+    srand(time(0));  // Исправлено grand -> srand
+    int n; cin >> n;
+    vector<vector<double>> matrix(n, vector<double>(n));  // Исправлено <> на >>
+    vector<double> b(n);
+    vector<double> x(n, 0); vector<double> xnew(n, 0);  // Исправлено <( на x
+
+    for (int i = 0; i < n; i++) {
+        b[i] = rand() % (9 + i);
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            matrix[i][j] = rand() % (10 + i);  // Исправлено 10i на 10 + i
+        }
+    }
+
+    cout << "\n" << "UR MATRIX: " << "\t" << "MATRIX B:" << "\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) cout << matrix[i][j] << ' ';
+        cout << "\t" << "| " << b[i] << "\n";
+    }
+
+    int maxiter = 1000, k = 0;  // Убрано лишнее x8
+    double eps = 0.00001;
+    while (k < maxiter) {  // Исправлено = на <
+        for (int i = 0; i < n; i++) {
+            double sum = 0;
+            for (int j = 0; j < n; j++) {
+                if (j != i) {
+                    sum += matrix[i][j] * x[j];  // Исправлено x на x[j]
+                }
+            }
+            xnew[i] = (b[i] - sum) / matrix[i][i];
+        }
+        
+        double a = 0;
+        for (int i = 0; i < n; i++) {
+            a += abs(x[i] - xnew[i]);  // Исправлено = на += для суммы разниц
+        }
+        
+        if (a < eps) break;
+        x = xnew;
+        k++;
+    }
+
+    cout << "\nSolution:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "x" << i + 1 << ": " << x[i] << "\n";  // Исправлено синтаксис вывода
+    }
+
+    return 0;
+}
