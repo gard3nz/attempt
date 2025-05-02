@@ -6,13 +6,13 @@
 using namespace std;
 
 ofstream output("C:/Users/209-3/Desktop/DLETEAFTER/out1.txt");
-int counter = 0;
+int count = 0;
 
-void perestavit(vector<string>& lines, int i) {
+void newswap(vector<string>& lines, int i) {
     int n = lines.size();
     if (i == n) {
-        counter++;
-        output << counter << ":";
+        count++;
+        output << count << ":";
         for (string line : lines) {
             output << " " << line;
         }
@@ -22,7 +22,7 @@ void perestavit(vector<string>& lines, int i) {
 
     for (int j = i; j <= n - 1; j++) {
         swap(lines[i], lines[j]);
-        perestavit(lines, i + 1);
+        newswap(lines, i + 1);
         swap(lines[i], lines[j]);
     }
 }
@@ -41,8 +41,8 @@ void processFile(const string& filename, int testNumber) {
         }
 
         output << "Тест " << testNumber << ":\n";
-        counter = 0;
-        perestavit(lines, 0);
+        count = 0;
+        newswap(lines, 0);
     }
     input.close();
 }
