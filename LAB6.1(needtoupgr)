@@ -1,0 +1,45 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+ofstream output("C:/Users/209-3/Desktop/DLETEAFTER/out1.txt");
+int count = 0;
+
+void newswap(vector<string>& words, int i) {
+    int n = words.size();
+    if (i == n) {
+        count++;
+        output << count << ":";
+        for (int i = 0; i < n; i++) {
+            if (i != 0) output << " ";
+            output << words[i];
+        }
+        output << endl;
+        return;
+    }
+
+    for (int j = i; j <= n - 1; j++) {
+        swap(words[i], words[j]);
+        newswap(words, i + 1);
+        swap(words[i], words[j]);
+    }
+}
+
+
+int main() {
+    newswap("C:/Users/209-3/Desktop/DLETEAFTER/1.1.txt", 1);
+    newswap("C:/Users/209-3/Desktop/DLETEAFTER/1.2.txt", 2);
+    newswap("C:/Users/209-3/Desktop/DLETEAFTER/1.3.txt", 3);
+
+    ifstream file("C:/Users/209-3/Desktop/DLETEAFTER/out1.txt"); string line;
+    while (getline(file, line)){
+        cout << line << "\n";
+    }
+
+    file.close();
+    output.close();
+    return 0;
+}
