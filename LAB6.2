@@ -1,0 +1,62 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+using namespace std;
+
+ofstream output("D:/QTAPP/PROJECTS/LAB6PROG/out2.txt");
+int count = 0;vector<string> current;
+void swapp(vector<string>& lines, int i) {
+    int n = lines.size();
+    if(i == n) {
+        if(!current.empty() && current.size() >= 2) {
+            count++;
+            output << count << ", " << current.size() << ",";
+            for(string line : current) {
+                output << " " << line;
+            }
+            output << "\n";
+        }
+        return;
+    }
+    current.push_back(lines[i]);
+    swapp(lines, i + 1);
+    current.pop_back();
+    swapp(lines, i + 1);
+}
+
+
+void convert(const string& filename){
+    ifstream input(filename);
+    if(input.is_open()) {
+        vector<string> lines; string word;
+        while(getline(input, word)) {
+            if(!word.empty()) {
+                lines.push_back(word);
+            }
+        }
+        swapp(lines, 0);
+    }
+    count = 0;
+}
+
+int main() {
+    convert("D:/QTAPP/PROJECTS/LAB6PROG/2.1.txt");
+    convert("D:/QTAPP/PROJECTS/LAB6PROG/2.2.txt");
+    output.close();
+    ifstream file("D:/QTAPP/PROJECTS/LAB6PROG/out2.txt"); string line;
+    while (getline(file, line)){
+        cout << line << "\n";
+    }
+    file.close();
+    return 0;
+}
+
+
+
+
+
+
+
+
+
