@@ -1,3 +1,7 @@
+
+
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -5,16 +9,16 @@
 
 using namespace std;
 
-ofstream output("C:/Users/209-3/Desktop/DLETEAFTER/out1.txt");
+ofstream output("D:/QTAPP/PROJECTS/LAB6PROG/out1.txt");
 int count = 0;
-
-void newswap(vector<string>& lines, int i) {
+void swapp(vector<string>& lines, int i) {
     int n = lines.size();
     if (i == n) {
         count++;
         output << count << ":";
-        for (string line : lines) {
-            output << " " << line;
+        for (int i = 0; i < n; i++) {
+            if (i != 0) output << " ";
+            output << lines[i];
         }
         output << endl;
         return;
@@ -22,42 +26,42 @@ void newswap(vector<string>& lines, int i) {
 
     for (int j = i; j <= n - 1; j++) {
         swap(lines[i], lines[j]);
-        newswap(lines, i + 1);
+        swapp(lines, i + 1);
         swap(lines[i], lines[j]);
     }
 }
 
-void backtrack(const string& filename, int testNumber) {
+
+void convert(const string& filename) {
     ifstream input(filename);
     if (input.is_open() && output.is_open()) {
         vector<string> lines;
-        string word;
+        string words;
 
-        while (getline(input, word)) {
-            if (!word.empty()) {
-                if (word.back() == '\r') word.pop_back();
-                lines.push_back(word);
+        while (getline(input, words)) {
+            if (!words.empty()) {
+                if (words.back() == '\r') words.pop_back();
+                lines.push_back(words);
             }
         }
 
-        output << "Тест " << testNumber << ":\n";
         count = 0;
-        newswap(lines, 0);
+        swapp(lines, 0);
     }
     input.close();
 }
 
-int main() {
-    backtrack("C:/Users/209-3/Desktop/DLETEAFTER/1.1.txt", 1);
-    backtrack("C:/Users/209-3/Desktop/DLETEAFTER/1.2.txt", 2);
-    backtrack("C:/Users/209-3/Desktop/DLETEAFTER/1.3.txt", 3);
 
-    ifstream file("C:/Users/209-3/Desktop/DLETEAFTER/out1.txt"); string line;
-    while (getline(file, line)){
-        cout << line << "\n";
-    }
+int main() {
+    convert("D:/QTAPP/PROJECTS/LAB6PROG/1.1.txt");
+    convert("D:/QTAPP/PROJECTS/LAB6PROG/1.2.txt");
+    convert("D:/QTAPP/PROJECTS/LAB6PROG/1.3.txt");
+    ifstream file("D:/QTAPP/PROJECTS/LAB6PROG/out1.txt"); string line;
+    while (getline(file, line)) cout << line << "\n";
 
     file.close();
     output.close();
     return 0;
 }
+
+
