@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "author": "Владислав",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": -3,
+      "left": -65.8,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-analog-joystick",
+      "id": "joystick1",
+      "top": 268.2,
+      "left": 34.2,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 129.6,
+      "left": -305.7,
+      "rotate": 270,
+      "attrs": { "humidity": "100", "temperature": "80" }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht2",
+      "top": -35.4,
+      "left": 392.7,
+      "rotate": 90,
+      "attrs": { "temperature": "80", "humidity": "100" }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht3",
+      "top": 137.4,
+      "left": 392.7,
+      "rotate": 90,
+      "attrs": { "temperature": "80", "humidity": "100" }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht4",
+      "top": -33.6,
+      "left": -315.3,
+      "rotate": 270,
+      "attrs": { "temperature": "80", "humidity": "99.5" }
+    },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr1", "top": 80, "left": -354.4, "attrs": {} },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr2",
+      "top": 79.8,
+      "left": 343.6,
+      "rotate": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-rgb-led",
+      "id": "rgb3",
+      "top": -92,
+      "left": -306.1,
+      "attrs": { "common": "cathode" }
+    },
+    {
+      "type": "wokwi-rgb-led",
+      "id": "rgb4",
+      "top": -92,
+      "left": 404.3,
+      "attrs": { "common": "cathode" }
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled1",
+      "top": -179.26,
+      "left": 48.23,
+      "attrs": { "i2cAddress": "0x3c" }
+    }
+  ],
+  "connections": [
+    [ "joystick1:HORZ", "uno:A0", "green", [ "v28.8", "h-144", "v-311" ] ],
+    [ "joystick1:VERT", "uno:A1", "green", [ "v19.2", "h-124.8", "v-291.9" ] ],
+    [ "joystick1:SEL", "uno:2", "green", [ "v28.8", "h86.4", "v-282.5" ] ],
+    [ "uno:VIN", "joystick1:VCC", "red", [ "h-19.1", "v244.1", "h105.6" ] ],
+    [ "uno:GND.3", "joystick1:GND", "black", [ "h-9.5", "v282.4", "h134.4" ] ],
+    [ "dht4:VCC", "uno:5V", "red", [ "h163.2", "v82.6" ] ],
+    [ "dht1:VCC", "uno:5V", "red", [ "h153.6", "v-80.6" ] ],
+    [ "dht3:VCC", "uno:5V", "red", [ "h-153.6", "v288", "h-278.4", "v-345.6" ] ],
+    [ "dht2:VCC", "uno:5V", "red", [ "h-115.2", "v-86.4", "h-316.8", "v201.6" ] ],
+    [ "dht1:GND", "uno:GND.2", "black", [ "h134.4", "v-48" ] ],
+    [ "dht4:GND", "uno:GND.2", "black", [ "h144", "v124.8" ] ],
+    [ "dht3:GND", "uno:GND.2", "black", [ "h-144", "v268.8", "h-307.2", "v-345.6" ] ],
+    [ "dht2:GND", "uno:GND.2", "black", [ "h-124.8", "v-105.6", "h-326.4", "v192" ] ],
+    [ "dht4:SDA", "uno:3", "green", [ "h134.4", "v460.7", "h326.4", "v-297.6" ] ],
+    [ "dht1:SDA", "uno:4", "green", [ "h115.2", "v307.1", "h345.6", "v-326.4" ] ],
+    [ "dht2:SDA", "uno:6", "green", [ "h-124.8", "v134.5" ] ],
+    [ "dht3:SDA", "uno:5", "green", [ "h-115.2", "v-28.7" ] ],
+    [ "ldr1:VCC", "uno:5V", "red", [ "h115.2", "v19.2" ] ],
+    [ "ldr1:GND", "uno:GND.2", "black", [ "h96", "v18.8" ] ],
+    [ "ldr1:AO", "uno:A2", "green", [ "h105.6", "v66.5" ] ],
+    [ "ldr2:VCC", "uno:5V", "red", [ "h-134.4", "v345.6", "h-278.4", "v-345.6" ] ],
+    [ "ldr2:GND", "uno:GND.2", "black", [ "h-124.8", "v365.2", "h-307.2", "v-345.6" ] ],
+    [ "ldr2:AO", "uno:A3", "green", [ "h-96", "v413.5", "h-364.8", "v-297.6" ] ],
+    [ "rgb3:COM", "uno:GND.2", "black", [ "v18.8", "h201.7", "v149.7" ] ],
+    [ "rgb4:COM", "uno:GND.2", "black", [ "v18.8", "h-191.9", "v-48", "h-316.8", "v201.6" ] ],
+    [ "rgb4:R", "uno:12", "green", [ "v19.2", "h-153.6", "v134.4" ] ],
+    [ "rgb4:G", "uno:7", "green", [ "v0" ] ],
+    [ "oled1:GND", "uno:GND.2", "black", [ "v-38.4", "h-153.6", "v480" ] ],
+    [ "oled1:VCC", "uno:5V", "red", [ "v-28.8", "h-143.85", "v460.8" ] ],
+    [ "oled1:SCL", "uno:A5", "green", [ "v-48", "h-191.7", "v566.4" ] ],
+    [ "oled1:SDA", "uno:A4", "green", [ "v-57.6", "h-220.73", "v566.4" ] ],
+    [ "rgb3:R", "uno:9", "green", [ "v0" ] ],
+    [ "rgb3:G", "uno:10", "green", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
