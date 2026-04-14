@@ -1,0 +1,354 @@
+#pragma once
+// ============================================================================
+// geomeditor.h — ШАБЛОН АДАПТЕРА
+// ============================================================================
+//
+// ЗАДАНИЕ:
+//   Реализовать адаптер — класс, который принимает текстовые команды
+//   и вызывает методы геометрического ядра (GeomCore).
+//
+//   Адаптер — это «переводчик» между внешним форматом данных (текст)
+//   и внутренним API ядра. Ядро ничего не знает о тексте, а адаптер
+//   ничего не знает о том, как ядро устроено внутри.
+//
+//   Архитектурный паттерн: Ports & Adapters (Hexagonal Architecture)
+//
+//   ┌──────────────────────┐       ┌───────────────────┐
+//   │  Текстовые команды   │       │                   │
+//   │  (внешний мир)       │──────▶│  StudentAdapter   │
+//   │                      │       │  (ваш код)        │
+//   └──────────────────────┘       └────────┬──────────┘
+//                                           │ вызывает
+//                                           ▼
+//                                  ┌───────────────────┐
+//                                  │    GeomCore       │
+//                                  │    (ядро)         │
+//                                  └───────────────────┘
+//
+// ЧТО НУЖНО РЕАЛИЗОВАТЬ:
+//   1. Парсинг и маршрутизация команд (метод dispatchCommand)
+//   2. Обработчики команд создания примитивов:
+//      - executeCreateCube
+//      - executeCreateSphere
+//      - executeCreateCylinder
+//   3. Обработчики булевых операций:
+//      - executeBooleanUnion
+//      - executeBooleanSubtract
+//      - executeBooleanIntersect
+//   4. (Бонус) Обработчики трансформаций:
+//      - executeTranslateShape
+//
+// ФОРМАТ ТЕКСТОВЫХ КОМАНД:
+//   Каждая команда — одна строка. Первое слово — имя команды,
+//   остальное — параметры через пробел.
+//
+//   Примитивы для корректности входных параметров проверять в geomcore.h строка 201:
+//     Geom.CreateCube <имя> <x1> <y1> <z1> <x2> <y2> <z2>
+//     Geom.CreateSphere <имя> <cx> <cy> <cz> <radius> <phiStart> <phiEnd> <thetaStart> <thetaEnd>
+//     Geom.CreateCylinder <имя> <ось:X|Y|Z> <радиус> <cx> <cy> <cz> <высота>
+//
+//   Булевы операцииля корректности входных параметров проверять в geomcore.h строка 146:
+//     Geom.BooleanUnion  <имяОсновного> [имяИнструмента2 ...]
+//     Geom.BooleanSubtract <имяОсновного>  [имяИнструмента2 ...]
+//     Geom.BooleanIntersect  <имяОсновного> [имяИнструмента2 ...]
+//
+//   Трансформации (бонус):
+//     Geom.TranslateShape <имя> <vx> <vy> <vz>
+//
+// ============================================================================
+
+#include "GeomCore.h"
+#include "CommandUtils.h"
+
+#include <vector>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <stdexcept>
+
+/// @brief Элемент геометрической сцены
+///
+/// Содержит:
+/// - name     — уникальное имя объекта (задаётся пользователем в команде)
+/// - shape    — геометрическая форма (результат работы GeomCore)
+/// - material — название материала (для данной работы — просто строка)
+///
+/// Пример: после команды "Geom.CreateCube МойКуб 0 0 0 10 10 10"
+///   name     = "МойКуб"
+///   shape    = результат GeomCore::CreateCube(0, 0, 0, 10, 10, 10)
+///   material = "Default"
+struct GeomItem {
+    std::string    name;        ///< Имя объекта (уникальный идентификатор)
+    TopoDS_Shape   shape;       ///< Геометрическая форма (OCCT)
+    std::string    material;    ///< Название материала
+};
+
+class GeomEditor {
+public:
+    GeomEditor() = default;
+    ~GeomEditor() = default;
+
+    // =================================================================
+    /// @brief Главный метод: принимает набор текстовых команд
+    ///
+    /// Логика работы:
+    ///   1. Разбить вход на строки
+    ///   2. Для каждой строки:
+    ///      a. Пропустить комментарии и пустые строки
+    ///      b. Разобрать строку на имя команды и параметры
+    ///      c. Вызвать dispatchCommand
+    ///   3. Все созданные объекты сохраняются в m_items
+    ///
+    /// @param commands — вектор строк, каждая строка — одна команда
+    // =================================================================
+    void processCommands(const std::vector<std::string>& commands) {
+        m_items.clear();
+
+        for (const auto& line : commands) {
+            // Пропускаем пустые строки и комментарии
+            if (CommandUtils::isComment(line)) continue;
+
+            try {
+                auto parsed = CommandUtils::parseLine(line);
+                dispatchCommand(parsed.command, parsed.params);
+            }
+            catch (const std::exception& e) {
+                std::cerr << "[StudentAdapter Error] Команда '"
+                          << line << "' завершилась ошибкой: "
+                          << e.what() << "\n";
+            }
+        }
+    }
+
+    // =================================================================
+    /// @brief Получить результат — все построенные объекты
+    /// @return Вектор GeomItem (имя + форма + материал)
+    // =================================================================
+    std::vector<GeomItem> getResult() const {
+        return m_items;
+    }
+
+private:
+
+    // =================================================================
+    //                      МАРШРУТИЗАТОР КОМАНД
+    // =================================================================
+    // TODO: Реализуйте диспетчер команд.
+    //
+    // Этот метод получает имя команды (например "Geom.CreateCube")
+    // и строку параметров (например "МойКуб 0 0 0 10 10 10"),
+    // и должен вызвать соответствующий обработчик.
+    //
+    // Подсказка: используйте цепочку if / else if для сопоставления
+    // имени команды с нужным методом-обработчиком.
+    // =================================================================
+    void dispatchCommand(const std::string& cmdName,
+                         const std::string& params)
+    {
+        if (cmdName == "Geom.CreateCube") {
+            executeCreateCube(params);
+        }
+        else if (cmdName == "Geom.CreateSphere") {
+            executeCreateSphere(params);
+        }
+        else if (cmdName == "Geom.CreateCylinder") {
+            executeCreateCylinder(params);
+        }
+    }
+
+    // =================================================================
+    //              ГРУППА 1: СОЗДАНИЕ ПРИМИТИВОВ
+    // =================================================================
+
+    // -----------------------------------------------------------------
+    // TODO: Реализуйте создание куба
+    //
+    // Формат параметров: "<имя> <x> <y> <z> <x1> <y1> <z1>"
+    // Пример: "МойКуб 0 0 0 10 10 10"
+    //
+    // Что нужно сделать:
+    //   1. Распарсить строку params — извлечь имя и 6 чисел
+    //   2. Вызвать m_core.CreateCube(x, y, z, x1, y1, d1)
+    //   3. Создать GeomItem с именем, формой и материалом "Default"
+    //   4. Добавить его в m_items
+    //
+    // Подсказка: используйте std::istringstream для парсинга
+    // Или используйте методы CommandUtils::
+    // -----------------------------------------------------------------
+    void executeCreateCube(const std::string& params) {
+        std::vector<std::string> tokens = CommandUtils::splitBySpace(params);
+        if (tokens.size() < 8)
+            return;
+        double x, y, z, x1, y1, z1;
+        x = CommandUtils::toDouble(tokens[1]);
+        y = CommandUtils::toDouble(tokens[2]);
+        z= CommandUtils::toDouble(tokens[3]);
+        x1 = CommandUtils::toDouble(tokens[4]);
+        y1 = CommandUtils::toDouble(tokens[5]);
+        z1 = CommandUtils::toDouble(tokens[6]);
+        TopoDS_Shape shape = m_core.CreateCube(x, y, z, x1, y1, z1);
+        GeomItem item;
+        item.shape = shape;
+        item.name = tokens[0];
+        item.material = "Default";
+        m_items.push_back(item);
+
+    }
+
+    // -----------------------------------------------------------------
+    // TODO: Реализуйте создание сферы
+    //
+    // Формат параметров: "<имя> <cx> <cy> <cz> <radius>"
+    // Пример: "МояСфера 5 5 5 3"
+    //
+    // Что нужно сделать:
+    //   1. Распарсить строку params — извлечь имя и 4 числа
+    //   2. Вызвать m_core.CreateSphere(cx, cy, cz, r, 0, 360, 0, 180)
+    //      (полная сфера: phi от 0 до 360, theta от 0 до 180)
+    //   3. Создать GeomItem и добавить в m_items
+    // -----------------------------------------------------------------
+    void executeCreateSphere(const std::string& params) {
+        std::vector<std::string> tokens = CommandUtils::splitBySpace(params);
+        if (tokens.size() < 10)
+            return;
+        double cx, cy, cz, r;
+        cx = CommandUtils::toDouble(tokens[1]);
+        cy = CommandUtils::toDouble(tokens[2]);
+        cz = CommandUtils::toDouble(tokens[3]);
+        r = CommandUtils::toDouble(tokens[4]);
+        TopoDS_Shape shape = m_core.CreateSphere(cx, cy, cz, r, 0, 360, 0, 180);
+        GeomItem item;
+        item.shape = shape;
+        item.name = tokens[0];
+        item.material = "Default";
+        m_items.push_back(item);
+    }
+
+    // -----------------------------------------------------------------
+    // TODO: Реализуйте создание цилиндра
+    //
+    // Формат параметров: "<имя> <ось> <радиус> <cx> <cy> <cz> <высота>"
+    // Пример: "МойЦилиндр Z 5 0 0 0 20"
+    //
+    // <ось> — символ: "X", "Y" или "Z"
+    //
+    // Что нужно сделать:
+    //   1. Распарсить params
+    //   2. Преобразовать строку оси ("X"/"Y"/"Z") в enum Orientation
+    //   3. Вызвать m_core.CreateCylinders
+    //   4. Создать GeomItem и добавить в m_items
+    // -----------------------------------------------------------------
+    void executeCreateCylinder(const std::string& params) {
+        std::vector<std::string> tokens = CommandUtils::splitBySpace(params);
+        if (tokens.size() < 11)
+            return;
+        double cx, cy, cz, r, height;
+        r = CommandUtils::toDouble(tokens[2]);
+        cx = CommandUtils::toDouble(tokens[3]);
+        cy = CommandUtils::toDouble(tokens[4]);
+        cz = CommandUtils::toDouble(tokens[5]);
+        height = CommandUtils::toDouble(tokens[6]);
+        
+        Orientation orientation = stringToOrientation(tokens[1]);
+        TopoDS_Shape shape = m_core.CreateCylinders(orientation, r, r, cx, cy, cz, height, 0, 0);
+        GeomItem item;
+        item.shape = shape;
+        item.name = tokens[0];
+        item.material = "Default";
+        m_items.push_back(item);
+    }
+
+    // =================================================================
+    //              ГРУППА 2: БУЛЕВЫ ОПЕРАЦИИ
+    // =================================================================
+
+    // -----------------------------------------------------------------
+    // TODO: Реализуйте булево объединение (union / fuse)
+    //
+    // Формат: "<имяОсновного> [имяИнструмента1 ...]"
+    // Пример: "Результат МойКуб МояСфера"
+    //
+    // Что нужно сделать:
+    //   1. Первый токен — имя основного над которым происходит действие 
+    //   2. Все остальные токены — имена тел-инструментов (tools)
+    //   4. Найти все тела по имени в m_items (метод findItem)
+    //   5. Собрать вектор tools из их shape
+    //   6. Вызвать m_core.BooleanUnion(baseShape, toolShapes)
+    //   7. Создать GeomItem с результатом и добавить в m_items
+    //
+    // Подсказка: для поиска по имени используйте вспомогательный
+    //            метод findItem (см. ниже)
+    // -----------------------------------------------------------------
+    void executeBooleanUnion(const std::string& params) {
+        // ВАША РЕАЛИЗАЦИЯ ЗДЕСЬ
+    }
+
+    // -----------------------------------------------------------------
+    // TODO: Реализуйте булево вычитание (subtract / cut)
+    // Аналогично BooleanUnion, но вызывать m_core.BooleanSubtract
+    // -----------------------------------------------------------------
+    void executeBooleanSubtract(const std::string& params) {
+        // ВАША РЕАЛИЗАЦИЯ ЗДЕСЬ
+    }
+
+    // -----------------------------------------------------------------
+    // TODO: Реализуйте булево пересечение (intersect / common)
+    // Аналогично BooleanUnion, но вызывать m_core.BooleanIntersect
+    // -----------------------------------------------------------------
+    void executeBooleanIntersect(const std::string& params) {
+        // ВАША РЕАЛИЗАЦИЯ ЗДЕСЬ
+    }
+
+    // =================================================================
+    //           ГРУППА 3 (БОНУС): ТРАНСФОРМАЦИИ
+    // =================================================================
+
+    // -----------------------------------------------------------------
+    // БОНУС: Реализуйте перемещение тела
+    //
+    // Формат: "<имя> <vx> <vy> <vz>"
+    // Пример: "МойКуб 10 0 0"
+    //
+    // Что нужно сделать:
+    //   1. Найти объект по имени в m_items
+    //   2. Вызвать m_core.TranslateShape(shape, gp_Vec(vx, vy, vz))
+    //   3. ЗАМЕНИТЬ shape найденного объекта на результат
+    //      (не создавать новый, а обновить существующий!)
+    // -----------------------------------------------------------------
+    void executeTranslateShape(const std::string& params) {
+        // ВАША РЕАЛИЗАЦИЯ ЗДЕСЬ (БОНУС)
+    }
+
+    // =================================================================
+    //              ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ
+    // =================================================================
+
+    // -----------------------------------------------------------------
+    /// @brief Найти объект по имени в списке m_items
+    ///
+    /// Проходит по вектору m_items и ищет элемент с заданным именем.
+    /// Возвращает итератор на найденный элемент.
+    /// Если элемент не найден — возвращает m_items.end()
+    ///
+    /// Использование:
+    ///   auto it = findItem("МойКуб");
+    ///   if (it == m_items.end()) {
+    ///       throw std::runtime_error("Объект не найден: МойКуб");
+    ///   }
+    ///   TopoDS_Shape shape = it->shape; // получить форму
+    ///
+    // -----------------------------------------------------------------
+    std::vector<GeomItem>::iterator findItem(const std::string& name) {
+        return std::find_if(m_items.begin(), m_items.end(),
+            [&name](const GeomItem& item) {
+                return item.name == name;
+            });
+    }
+
+    // =================================================================
+    //                       СОСТОЯНИЕ
+    // =================================================================
+    std::vector<GeomItem> m_items;  ///< Список всех построенных объектов
+    GeomCore              m_core;   ///< Экземпляр геометрического ядра
+};
