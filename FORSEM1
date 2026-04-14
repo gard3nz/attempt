@@ -281,7 +281,17 @@ private:
     //            метод findItem (см. ниже)
     // -----------------------------------------------------------------
     void executeBooleanUnion(const std::string& params) {
-        // ВАША РЕАЛИЗАЦИЯ ЗДЕСЬ
+        std::vector<std::string>tokens = CommandUtils::splitBySpace(params);
+        std::vector<TopoDS_Shape>tools{};
+        for (int i = 1; i < tokens.size(); i++) {
+            auto it = findItem(tokens[i]);
+            if (it == m_items.end()) {
+                throw std::runtime_error("Объект не найден: МойКуб");
+            }
+            TopoDS_Shape shape = it->shape;
+            tools.push_back(shape);
+            m_core.BooleanUnion(baseShape, toolShapes)
+        }
     }
 
     // -----------------------------------------------------------------
