@@ -1,4 +1,4 @@
-https://docs.google.com/presentation/d/1jCckoexACpneq9MKJqdXm8PUdT87KiGd/edit?usp=drive_link&ouid=117628053491461801030&rtpof=true&sd=true
+https://chat.deepseek.com/share/382mlgfsknmcwy70lu
 
 
 #include <bits/stdc++.h>
